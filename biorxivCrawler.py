@@ -18,12 +18,15 @@ class BiorxivCrawler(object):
         elements = self.driver.find_elements_by_class_name("highwire-cite-linked-title")
         return [elem.get_attribute("href") for elem in elements]
 
-    def get_all_links(self, filename=None, sleep_every=10, sleep_for=10.0):
+    def get_all_links(self, subject=None, filename=None, sleep_every=10,
+                      sleep_for=10.0):
         '''
         Yield links and optionally write them to a file.
 
         Parameters
         ----------
+        subject : str or None
+            A subject area or ``None`` (the default) to download all links.
         filename : str or None
             Where to store the collected links (or ``None``, the default, to not
             store them at all).
@@ -39,12 +42,16 @@ class BiorxivCrawler(object):
         '''
         if filename is not None:
             f = open(filename, 'w')
-        self.driver.get("http://biorxiv.org/content/early/recent")
+        if subject is None:
+            base_url = "http://biorxiv.org/content/early/recent"
+        else:
+            base_url = "http://biorxiv.org/collection/" + subject
+        self.driver.get(base_url)
         last_page = int(self.driver.find_element_by_class_name("pager-last").text)
         page_counter = 0
         links = []
         while page_counter < last_page:
-            page_links = self.extract_links("http://biorxiv.org/content/early/recent?page=" + str(page_counter))
+            page_links = self.extract_links(base_url + "?page=" + str(page_counter))
             if filename is not None:
                 f.write('\n'.join(page_links) + '\n')
             links.extend(page_links)
