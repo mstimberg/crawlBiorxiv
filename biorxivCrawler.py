@@ -1,4 +1,3 @@
-#!/usr/bin/python2.7
 import time
 import sys
 from selenium import webdriver
@@ -42,25 +41,24 @@ def extractJournalFromPage(driver, link):
         out = "unpublished"
     return out
 
-myDriver = webdriver.Firefox()
-myLinks = getAllLinks(myDriver) # comment if you have already a list of links
-#with open("todoLinks.txt", "rb") as infile: # uncomment if you have already a list of links
-#    myLinks = [line[:-1] for line in infile] # uncomment if you have already a list of links
-with open("linkPublishedIn.txt.txt", "a") as outfile:
-    journalCounter = {"unpublished":0}
-    for curLink in myLinks:
-        journal = extractJournalFromPage(myDriver, curLink)
-        print >> outfile, curLink + '\t' + journal
-        if journal:
-            try:
-                journalCounter[journal] += 1
-            except KeyError:
-                journalCounter[journal] = 1
-        else:
-            journalCounter["unpublished"] += 1
-myDriver.close()
+if __name__ == '__main__':
+    myDriver = webdriver.Firefox()
+    myLinks = getAllLinks(myDriver) # comment if you have already a list of links
+    #with open("todoLinks.txt", "rb") as infile: # uncomment if you have already a list of links
+    #    myLinks = [line[:-1] for line in infile] # uncomment if you have already a list of links
+    with open("linkPublishedIn.txt.txt", "a") as outfile:
+        journalCounter = {"unpublished":0}
+        for curLink in myLinks:
+            journal = extractJournalFromPage(myDriver, curLink)
+            print >> outfile, curLink + '\t' + journal
+            if journal:
+                try:
+                    journalCounter[journal] += 1
+                except KeyError:
+                    journalCounter[journal] = 1
+            else:
+                journalCounter["unpublished"] += 1
+    myDriver.close()
 
-for journal, counter in journalCounter.items():
-    print '\t'.join([journal, str(counter)])
-
-
+    for journal, counter in journalCounter.items():
+        print '\t'.join([journal, str(counter)])
